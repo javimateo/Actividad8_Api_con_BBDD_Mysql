@@ -1,0 +1,30 @@
+{
+  "name": "actividad8_api_mysql",
+  "version": "1.0.0",
+  "description": "API REST para la gestión de un Blog (posts y autores) desarrollada con **Node.js + Express + MySQL**.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/javimateo/Actividad8_Api_con_BBDD_Mysql.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/javimateo/Actividad8_Api_con_BBDD_Mysql/issues"
+  },
+  "homepage": "https://github.com/javimateo/Actividad8_Api_con_BBDD_Mysql#readme",
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "mysql2": "^3.22.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
