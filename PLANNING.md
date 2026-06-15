@@ -1,158 +1,56 @@
 # Planning — Blog API (Actividad 8)
 
-Desarrollo incremental por fases, una rama Git por fase.  
-Cada fase termina con un merge a `develop` y un commit limpio antes de pasar a la siguiente.
-
----
-
-## Fase 0 — Repositorio y estructura base
-
-**Rama:** `—` (directamente en `main` → `develop`)
-
-- [ ] `git init` y primer commit con `ENUNCIADO.md`, `PLANNING.md`
-- [ ] Crear rama `develop` desde `main`
-- [ ] Añadir `.gitignore` (`node_modules/`, `.env`)
-- [ ] Crear `README.md`
+Desarrollo incremental por fases. Cada fase añade una capa funcional sobre la anterior, siguiendo el flujo **base de datos → servidor → autores → posts → integración completa**.
 
 ---
 
 ## Fase 1 — Base de datos
 
-**Rama:** `feature/db-schema`
+Definición del esquema relacional en MySQL.
 
-- [ ] Verificar que MySQL está corriendo y accesible
-- [ ] Ejecutar `database/schema.sql` para crear la BD, tablas y datos de ejemplo
-- [ ] Comprobar en MySQL que las tablas y la FK están correctas
-- [ ] Merge a `develop`
+- Tabla `autores` con los campos: `nombre`, `email`, `imagen`
+- Tabla `posts` con los campos: `titulo`, `descripcion`, `fecha_creacion`, `categoria`, `autor_id`
+- Clave foránea de `posts.autor_id` hacia `autores.id`
+- Datos de ejemplo para facilitar las pruebas desde el primer momento
 
 ---
 
-## Fase 2 — Setup de Express
+## Fase 2 — Setup del servidor Express
 
-**Rama:** `feature/express-setup`
+Configuración de la base del proyecto Node.js.
 
-- [ ] `npm init -y`
-- [ ] Instalar dependencias: `express`, `mysql2`, `dotenv`
-- [ ] Instalar dependencia de desarrollo: `nodemon`
-- [ ] Crear `.env.example` con las variables necesarias:
-  ```
-  DB_HOST=localhost
-  DB_PORT=3306
-  DB_USER=root
-  DB_PASSWORD=
-  DB_NAME=blog_api
-  PORT=3000
-  ```
-- [ ] Crear `src/config/db.js` — pool de conexiones MySQL
-- [ ] Crear `src/app.js` — instancia de Express con `express.json()` montado
-- [ ] Crear script `npm run dev` con nodemon y `npm start`
-- [ ] Verificar que el servidor arranca en `http://localhost:3000`
-- [ ] Merge a `develop`
+- Inicialización del proyecto y gestión de dependencias (`express`, `mysql2`, `dotenv`, `nodemon`)
+- Pool de conexiones a MySQL reutilizable en todos los controladores
+- Variables de entorno para credenciales, sin datos sensibles en el código
+- Servidor Express arrancando con `npm run dev` / `npm start`
 
 ---
 
 ## Fase 3 — API de Autores
 
-**Rama:** `feature/authors-api`
+Primera capa de la API REST bajo el prefijo `/api/authors`.
 
-Rutas a implementar:
-
-| Método | URL                | Descripción               |
-|--------|--------------------|---------------------------|
-| GET    | `/api/authors`     | Listar todos los autores  |
-| GET    | `/api/authors/:id` | Obtener un autor por ID   |
-| POST   | `/api/authors`     | Crear un nuevo autor      |
-
-- [ ] Crear `src/controllers/authors.controller.js`
-- [ ] Crear `src/routes/authors.routes.js`
-- [ ] Montar las rutas en `src/app.js` bajo `/api/authors`
-- [ ] Probar con un cliente HTTP (curl, Postman, Thunder Client):
-  - [ ] `GET /api/authors` devuelve array
-  - [ ] `POST /api/authors` crea y devuelve el autor con su `id`
-  - [ ] `GET /api/authors/:id` devuelve 404 si no existe
-- [ ] Merge a `develop`
+- `GET /api/authors` — lista todos los autores
+- `GET /api/authors/:id` — obtiene un autor concreto (404 si no existe)
+- `POST /api/authors` — crea un nuevo autor
 
 ---
 
 ## Fase 4 — API de Posts
 
-**Rama:** `feature/posts-api`
+Segunda capa de la API con lógica de relación entre tablas.
 
-Rutas a implementar:
+- `GET /api/posts` — lista todos los posts incluyendo los datos completos del autor (JOIN)
+- `GET /api/posts/:id` — obtiene un post concreto con su autor (404 si no existe)
+- `POST /api/posts` — crea un nuevo post validando que el `autor_id` exista
 
-| Método | URL              | Descripción                                   |
-|--------|------------------|-----------------------------------------------|
-| GET    | `/api/posts`     | Listar todos los posts (con datos del autor)  |
-| GET    | `/api/posts/:id` | Obtener un post por ID (con datos del autor)  |
-| POST   | `/api/posts`     | Crear un nuevo post                           |
-
-- [ ] Crear `src/controllers/posts.controller.js`
-- [ ] Crear `src/routes/posts.routes.js`
-- [ ] Implementar JOIN en las consultas GET para incluir datos del autor
-- [ ] Montar las rutas en `src/app.js` bajo `/api/posts`
-- [ ] Probar:
-  - [ ] `GET /api/posts` — cada post incluye objeto `autor` completo
-  - [ ] `GET /api/posts/:id` — incluye autor, 404 si no existe
-  - [ ] `POST /api/posts` — valida que `autor_id` existe antes de insertar
-- [ ] Merge a `develop`
+Cada respuesta incluye el objeto `autor` anidado, no solo el identificador.
 
 ---
 
-## Fase 5 — Posts por autor
+## Fase 5 — Posts por autor y documentación
 
-**Rama:** `feature/posts-by-author`
+Ruta de integración y documentación interactiva.
 
-Ruta a implementar:
-
-| Método | URL                      | Descripción                          |
-|--------|--------------------------|--------------------------------------|
-| GET    | `/api/authors/:id/posts` | Todos los posts de un autor concreto |
-
-- [ ] Añadir handler en `authors.controller.js`
-- [ ] Añadir la ruta en `authors.routes.js`
-- [ ] Probar:
-  - [ ] Devuelve los posts del autor incluyendo datos del autor
-  - [ ] Devuelve 404 si el autor no existe
-  - [ ] Devuelve array vacío `[]` si el autor existe pero no tiene posts
-- [ ] Merge a `develop`
-
----
-
-## Fase 6 — Cierre y entrega
-
-**Rama:** `—` (desde `develop` → `main`)
-
-- [ ] Revisión final del código (nombres claros, sin comentarios innecesarios)
-- [ ] Comprobar que `.env` NO está en el repositorio
-- [ ] Comprobar que `node_modules/` NO está en el repositorio
-- [ ] Verificar que `database/schema.sql` está actualizado y exportado
-- [ ] Merge `develop` → `main` con `--no-ff`
-- [ ] Crear tag `v1.0.0`
-- [ ] Push a GitHub y comprobar que el repo es público/accesible
-
----
-
-## Resumen de ramas
-
-```
-main
-└── develop
-    ├── feature/db-schema
-    ├── feature/express-setup
-    ├── feature/authors-api
-    ├── feature/posts-api
-    └── feature/posts-by-author
-```
-
----
-
-## Orden de criterios cubiertos por fase
-
-| Fase | Criterio rúbrica |
-|------|-----------------|
-| 1    | Criterio 1 — Tablas correctas |
-| 2    | Criterio 2 — Proyecto Express |
-| 2    | Criterio 3 — Rutas base de la API |
-| 3    | Criterio 5 — URLs autores |
-| 4    | Criterio 4 — URLs posts |
-| 5    | Criterio 6 — Posts por autor |
+- `GET /api/authors/:id/posts` — devuelve todos los posts de un autor concreto (404 si el autor no existe, array vacío si no tiene posts)
+- Swagger UI disponible en `/docs` para explorar y probar todos los endpoints desde el navegador
