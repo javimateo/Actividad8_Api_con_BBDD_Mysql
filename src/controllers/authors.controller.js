@@ -1,5 +1,6 @@
 const pool = require('../config/db');
 
+// ?? null: si imagen no viene en el body, evita insertar undefined (causaría error en MySQL)
 async function getAll(req, res) {
   try {
     const [rows] = await pool.query('SELECT * FROM autores');
